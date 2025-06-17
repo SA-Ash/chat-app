@@ -4,12 +4,13 @@ import { RiMore2Fill } from 'react-icons/ri'
 import SearchModal from './SearchModal'
 import formatTimestamp from '../utils/formatTimestamp'
 import chatData from '../data/chats'
+import { listenForChats } from '../firebase/firebase'
 function ChatList() {
   const [chats, setChats] = useState([]);
   console.log(chatData)
 
   useEffect(()=>{
-    setChats(chatData)
+    const unsubscribe = listenForChats(setChats)
   }, [])
 
   //useMemo is the hook used to remember the previous data

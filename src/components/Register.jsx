@@ -1,14 +1,37 @@
 import React, { useState } from 'react'
 import { FaUserPlus } from 'react-icons/fa'
-
-function Register() {
-    const [onClicked, setOnClicked] = useState(false)
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import {auth, db} from "../firebase/firebase.js"
+import { doc, setDoc } from 'firebase/firestore'
+function Register({isLogin, setIsLogin}) { 
+    const [loading, setLoading] = useState(false)
     const [userData, setUserData] = useState({
         fullName: '',
         email: '',
         password: ''
     })
     console.log(userData)
+    async function handleAuth(){
+        try{
+            const userCredential = await createUserWithEmailAndPassword(auth, userData?.email, userData?.password)
+            const user = userCredential.user
+
+            const userDocRef = doc(db, "users", user.uid)
+            await setDoc(userDocRef, {
+                uid: user.uid,
+                email: user.email,
+                username: user.email?.split("@")[0],
+                fullName: userData.fullName,
+                image: ""
+            })
+            console.log("wrote user doc")
+        }catch(e){
+            console.log(e)
+        }
+        finally{
+            setLoading(true)
+        }
+    }
   return (
     <section className='flex flex-col items-center justify-center h-[100vh] background-image'>
         <div className='bg-white shadow-lg p-5 rounded-xl h-[27rem] w-[20rem] flex flex-col justify-center items-center'>
@@ -21,12 +44,21 @@ function Register() {
                 <input onChange={(e)=>setUserData({...userData, email: e.target.value})} type="email" className="border border-green-200 w-full p-2 rounded-md bg-[#01aa851d] tex-[#004939f3 mb-3 font-medium outline-none" placeholder='Email' />
                 <input onChange={(e)=>setUserData({...userData, password: e.target.value})} type="password" className="border border-green-200 w-full p-2 rounded-md bg-[#01aa851d] tex-[#004939f3 mb-3 font-medium outline-none" placeholder='Password'/>
             </div>
-            <div className='cursor-pointer w-full bg-[#01aa85] rounded-md flex gap-1 items-center justify-center'>
-                <button onClick={()=>setSignUpDetails(signUpDetails)} className='cursor-pointer  text-white font-bold p-2 '>Register </button>
-                <FaUserPlus className='text-white'/>
+            <div onClick={handleAuth}  className='w-full'>
+                <button disabled={loading} className='  w-full bg-[#01aa85] rounded-md flex gap-1 items-center justify-center cursor-pointer  text-white font-bold p-2' >
+                    {
+                        loading ? (
+                            <>
+                                Processing....
+                            </>
+                        ):(<>
+                            Register <FaUserPlus/>
+                        </>)
+                    }
+                </button>
             </div>
             <div className='mt-5 text-center text-gray-400 text-sm'>
-                <button>Already have an account? Sign In</button>
+                <button onClick={()=>setIsLogin(!isLogin )}>Already have an account? Sign In</button>
             </div>
         </div> 
     </section>

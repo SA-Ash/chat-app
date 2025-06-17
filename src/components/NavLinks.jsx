@@ -1,7 +1,16 @@
 import React from 'react'
 import logo from "../../public/assets/logo.png"
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase/firebase.js'
 import { RiArrowDownSFill, RiBardLine, RiChatAiLine, RiFile4Line, RiFolderUserLine, RiNotificationLine, RiShutDownLine } from 'react-icons/ri'
 function NavLink() {
+  async function handleLogOut(){
+    try{
+      await signOut(auth)
+    } catch(e){
+      console.log(e)
+    }
+  } 
   return (
     <section className='sticky lg:static top-0 flex items-center lg:items-start lg:justify-start lg:h-[100vh] w-[100%] h-[7vh] lg:w-[150px] py-8 lg:py-0 bg-[#01AA85]'>
       <main className='flex lg:flex-col items-center lg:gap-10 justify-between lg:px-0 w-[100%]'>
@@ -35,7 +44,7 @@ function NavLink() {
             </button>
           </li>
           <li className=''>
-            <button className='cursor-pointer lg:text-[28px] text-[22px]'>
+            <button onClick={handleLogOut} className='cursor-pointer lg:text-[28px] text-[22px]'>
               <RiShutDownLine color='#fff'/>
             </button>
           </li>

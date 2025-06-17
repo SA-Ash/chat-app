@@ -1,4 +1,4 @@
-const messageData = [
+export const messageData = [
     {
         timestamp: {
             seconds: 1738417042,
@@ -256,5 +256,3 @@ const messageData = [
         text: "Solid choice. I’d suggest using Supabase for authentication and database. It's like Firebase but open-source.",
     },
 ];
-
-export default messageData;

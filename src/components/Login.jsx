@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { FaSignInAlt } from 'react-icons/fa'
+import { auth } from '../firebase/firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 
-function Login() {
+function Login({isLogin, setIsLogin}) {
   const [userData, setUserData] = useState({
           email: '',
           password: ''
       })
+    const [loading, setLoading] = useState(false)
     function handleUserData(e){
       const {name, value} = e.target
 
@@ -15,12 +18,16 @@ function Login() {
       }))
     }
 
-    function handleAuth(){
-      try{
-        alert("Login Successfull")
-      }catch(error){
-        console.error(error)
-      }
+    async function handleAuth(){
+        setLoading(true)
+        try{
+            await signInWithEmailAndPassword(auth, userData?.email, userData?.password)
+            
+        }catch(e){
+            console.log(e)
+        } finally{
+          setLoading(false)
+        }
     }
     console.log(userData)
   return (
@@ -34,12 +41,24 @@ function Login() {
                 <input name='email' type="email" onChange={handleUserData} className="border border-green-200 w-full p-2 rounded-md bg-[#01aa851d] tex-[#004939f3 mb-3 font-medium outline-none" placeholder='Email' />
                 <input name='password' onChange={handleUserData} type="password" className="border border-green-200 w-full p-2 rounded-md bg-[#01aa851d] tex-[#004939f3 mb-3 font-medium outline-none" placeholder='Password'/>
             </div>
-            <div className='cursor-pointer  w-full bg-[#01aa85] rounded-md flex gap-1 items-center justify-center'>
-                <button className='cursor-pointer  text-white font-bold p-2 '>Login </button>
-                <FaSignInAlt className='text-white'/>
+            <div onClick={handleAuth}  className='w-full'>
+                <button disabled={loading} className='  w-full bg-[#01aa85] rounded-md flex gap-1 items-center justify-center cursor-pointer  text-white font-bold p-2' >
+                  {
+                    loading ? (
+                     <>
+                       Processing...
+                     </>
+                    ) : (
+                      <>
+                        Login <FaSignInAlt/>
+                      </>
+                    )
+                  } </button>
+                  
+                
             </div>
             <div className='mt-5 text-center text-gray-400 text-sm'>
-                <button>Don't have an account yet? Sign Up</button>
+                <button onClick={()=>setIsLogin(!isLogin )}>Don't have an account yet? Sign Up</button>
             </div>
         </div> 
     </section>
